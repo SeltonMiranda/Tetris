@@ -1,5 +1,4 @@
 #include "Piece.hpp"
-#include <iostream>
 
 const std::array<std::array<std::array<int, 4>, 4>, 7> Piece::tetrominos = {{
     // Tetromino I
@@ -53,11 +52,8 @@ const std::array<std::array<std::array<int, 4>, 4>, 7> Piece::tetrominos = {{
 }};
 
 Piece::Piece(int startType, int startX, int startY)
-            : type{startType}, x{startX}, y{startY} 
-{
-  for (int dy = 0; dy < 4; dy++) {
-    for (int dx = 0; dx < 4; dx++) {
-      this->shape[dy][dx] = tetrominos[type][dy][dx];
-    }
-  } 
-}
+: type{startType}, x{startX}, y{startY}, shape{tetrominos[startType]} {}
+
+
+
+

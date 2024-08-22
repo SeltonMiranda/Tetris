@@ -50,11 +50,17 @@ void Tetris::removePieceFromBoard() {
 
 void Tetris::drawBoard() {
   std::cout << "\033[2J\033[1;1H"; // Clears terminal screen
+
+  auto [shadowX, shadowY]{this->calculateShadowPosition()};
+  this->drawPieceShadow(shadowX, shadowY);
   this->placePieceOnBoard();
+
   for (int y = 0; y < Tetris::HEIGHT; y++) {
     for (int x = 0; x < Tetris::WIDTH; x++) {
       if (this->board[y][x] == 1) {
         std::cout << "#";
+      } else if (this->board[y][x] == 2) {
+        std::cout << "+";
       } else {
         std::cout << " ";
       }
@@ -62,6 +68,7 @@ void Tetris::drawBoard() {
     std::cout << std::endl;
   }
   this->removePieceFromBoard();
+  this->removePieceShadow(shadowX, shadowY);
 }
 
 bool Tetris::canRotate(const std::array<std::array<int, 4>, 4>& rotatedPiece) const {
@@ -145,10 +152,52 @@ void Tetris::run() {
       case 's': this->movePiece( 0, 1); break;
     }
 
-    if (this->gameOver) break;
+    if (this->gameOver) {
+      delete this->piece;
+      break;
+    }
 
     this->movePiece(0, 1);
     this->drawBoard();
     sleep(1);
   }
+}
+
+std::pair<int, int> Tetris::calculateShadowPosition() {
+  int sY{this->piece->y};
+  int sX{this->piece->x};
+
+  while (!this->collided(0, sY + 1 - this->piece->y))
+    sY++;
+
+  return {sX, sY};
+}
+
+
+void Tetris::drawPieceShadow(int shadowX, int shadowY) {
+  for (int y = 0; y < 4; y++) {
+    for (int x = 0; x < 4; x++) {
+      if (this->piece->shape[y][x] == 1) {
+        int boardY{shadowY + y};
+        int boardX{shadowX + x};
+        if (boardY >= 0 && boardY < Tetris::HEIGHT && boardX >= 0 && boardX < Tetris::WIDTH) {
+          this->board[boardY][boardX] = 2;
+        }
+      }
+    }
+  }
+}
+
+void Tetris::removePieceShadow(int shadowX, int shadowY) {
+  for (int y = 0; y < 4; y++) {
+    for (int x = 0; x < 4; x++) {
+      if (this->piece->shape[y][x] == 1) {
+        int boardY{shadowY + y};
+        int boardX{shadowX + x};
+        if (boardY >= 0 && boardY < Tetris::HEIGHT && boardX >= 0 && boardX < Tetris::WIDTH) {
+          this->board[boardY][boardX] = 0;
+        }
+      }
+    }
+  } 
 }

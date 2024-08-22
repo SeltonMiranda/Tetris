@@ -1,9 +1,7 @@
 #ifndef TETRIS_HPP
 #define TETRIS_HPP
 
-
-// TODO: Arrumar a funçao drawBoard(), para imprimir 0 -> " " e 1 -> "#" 
-// TODO: Configurar o tabuleiro para bordas com 1 e interior 0
+// Reminder: Hard Drop it's equals to piece's shadow
 
 #include <array>
 #include "Piece.hpp"
@@ -32,6 +30,9 @@ class Tetris {
     bool collided(int offx, int offy);
     void movePiece(int dx, int dy);
     void lockPiece();
+    void drawPieceShadow(int shadowX, int shadowY);
+    void removePieceShadow(int shadowX, int shadowY);
+    std::pair<int, int> calculateShadowPosition();
 
     void createPiece();
 };
