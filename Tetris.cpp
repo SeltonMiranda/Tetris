@@ -5,8 +5,8 @@
 Tetris::Tetris() : gameOver{false}, fps{60}, score{0} {
   for (int y = 0; y < Tetris::HEIGHT; y++) {
     for (int x = 0; x < Tetris::WIDTH; x++) {
-      if ( y == 0 || y == Tetris::HEIGHT - 1 ||
-        x == 0 || x == Tetris::WIDTH  - 1 ) {
+      if (y == 0 || y == Tetris::HEIGHT - 1 ||
+          x == 0 || x == Tetris::WIDTH  - 1 ) {
         this->board[y][x] = 1;
       } else {
         this->board[y][x] = 0;
@@ -19,14 +19,15 @@ Tetris::Tetris() : gameOver{false}, fps{60}, score{0} {
 
 void Tetris::createPiece() {
   this->piece = new Piece(rand() % 7, Tetris::WIDTH/2 - 2, 1);
+  if (collided(0, 0)) this->gameOver = !this->gameOver;
 }
 
 void Tetris::placePieceOnBoard() {
   for (int y = 0; y < 4; y++) {
     for (int x = 0; x < 4; x++) {
       if (this->piece->shape[y][x] == 1) {
-        int boardY = this->piece->y + y;
-        int boardX = this->piece->x + x;
+        int boardY{this->piece->y + y};
+        int boardX{this->piece->x + x};
         if (boardY >= 0 && boardY < Tetris::HEIGHT && boardX >= 0 && boardX < Tetris::WIDTH) {
           this->board[boardY][boardX] = 1;
         }
@@ -106,9 +107,13 @@ bool Tetris::collided(int offx, int offy) {
   for (int y = 0; y < 4; y++) {
     for (int x = 0; x < 4; x++) {
       if (this->piece->shape[y][x] == 1) {
-        int px{this->piece->x};
-        int py{this->piece->y};
-        if (this->board[py + y + offy][px + x + offx] == 1) 
+        int px{this->piece->x + x + offx};
+        int py{this->piece->y + y + offy};
+        if (px < 0 || px >= Tetris::WIDTH || 
+            py < 0 || py >= Tetris::HEIGHT) 
+          return true;
+
+        if (this->board[py][px] == 1)
           return true;
       }
     }
@@ -139,6 +144,14 @@ void Tetris::movePiece(int dx, int dy) {
   }
 }
 
+void Tetris::softDrop() { this->movePiece(0, 1); }
+
+void Tetris::hardDrop() { 
+  auto [shadowX, shadowY]{this->calculateShadowPosition()};
+  this->piece->x = shadowX;
+  this->piece->y = shadowY;
+}
+
 void Tetris::run() {
   this->drawBoard();
   char key;
@@ -146,10 +159,11 @@ void Tetris::run() {
     std::cin >> key;
     switch(key) {
       case 'w': this->rotate(); break;
-      case 'q': this->gameOver = !this->gameOver; break;
       case 'a': this->movePiece(-1, 0); break;
+      case 's': this->softDrop(); break;
       case 'd': this->movePiece( 1, 0); break;
-      case 's': this->movePiece( 0, 1); break;
+      case 'e': this->hardDrop(); break;
+      case 'q': this->gameOver = !this->gameOver; break;
     }
 
     if (this->gameOver) {
@@ -157,9 +171,10 @@ void Tetris::run() {
       break;
     }
 
+    this->clearFullRows();
     this->movePiece(0, 1);
     this->drawBoard();
-    sleep(1);
+    usleep(500000);
   }
 }
 
@@ -200,4 +215,36 @@ void Tetris::removePieceShadow(int shadowX, int shadowY) {
       }
     }
   } 
+}
+
+void Tetris::pullBlocksDown(int startRow) {
+  for (int y = startRow; y > 0; y--) {
+    for (int x = 1; x < Tetris::WIDTH - 2; x++) {
+      if (this->board[y][x] == 1) {
+        this->board[y + 1][x] = this->board[y][x];
+        this->board[y][x] = 0;
+      }
+    }
+  } 
+}
+
+void Tetris::clearFullRows() {
+  for (int y = Tetris::HEIGHT - 2; y > 0; y--) {
+    bool full{true};
+
+    for (int x = 1; x < Tetris::WIDTH - 2; x++) {
+      if (this->board[y][x] == 0) {
+        full = false;
+        break;
+      }
+
+    }
+
+    if (full) {
+      // Erase the blocks which are in a full row
+      for (int x = 1; x < Tetris::WIDTH - 2; x++)
+        this->board[y][x] = 0;
+      this->pullBlocksDown(y - 1);
+    }
+  }
 }

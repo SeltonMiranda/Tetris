@@ -3,16 +3,18 @@
 Only works in linux systems, require g++ compiler
 
 # TODO List
-- [ ] ROTATE AROUND THE PIECE CENTER
-- [ ] INCLUDE NCURSES LIBRARY TO GET BUFFER INPUT INSTANTLY
-- [ ] CLEAR COMPLETED ROWS
-- [ ] DIFERENTIATE EACH PIECE BY A COLOR 
-- [ ] MAKE IT RUNS SLIGHTLY FASTER
-- [ ] ENCAPSULATE MEMBERS FROM CLASS 
+- [ ] Rotate around the piece center
+- [ ] Include ncurses library to get buffer input instantly
+- [x] Clear completed rows
+- [ ] Diferentiate each piece by a color 
+- [ ] Make it runs slightly faster
+- [ ] Encapsulate members from class 
+- [ ] Create a queue of next pieces
+- [ ] Make a scoreboard
 
 ## AFTER ALL IT IS DONE ABOVE
-- [ ] CHANGE PIECE CLASS BY AN ABSTRACT BLOCK CLASS
-- [ ] REFACTOR TO USE AN 1-DIM ARRAY THAN 2-DIM ARRAY FOR PIECES AND BOARD
+- [ ] Change piece class by an abstract block class
+- [ ] Refactor to use an 1-dim array than 2-dim array for pieces and board
 
 # To Run the game
 ```bash

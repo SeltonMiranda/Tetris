@@ -1,8 +1,6 @@
 #ifndef TETRIS_HPP
 #define TETRIS_HPP
 
-// Reminder: Hard Drop it's equals to piece's shadow
-
 #include <array>
 #include "Piece.hpp"
 
@@ -10,7 +8,7 @@ class Tetris {
   private:
     // Constants
     static constexpr int HEIGHT = 20; 
-    static constexpr int WIDTH = 20; 
+    static constexpr int WIDTH = 15; 
 
     std::array<std::array<int, Tetris::WIDTH>, Tetris::HEIGHT> board;
     Piece* piece;
@@ -32,6 +30,11 @@ class Tetris {
     void lockPiece();
     void drawPieceShadow(int shadowX, int shadowY);
     void removePieceShadow(int shadowX, int shadowY);
+    
+    void softDrop();
+    void hardDrop();
+    void clearFullRows();
+    void pullBlocksDown(int startRow);
     std::pair<int, int> calculateShadowPosition();
 
     void createPiece();
