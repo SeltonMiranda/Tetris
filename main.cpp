@@ -6,9 +6,8 @@
 int main() {
   std::srand(std::time(nullptr));
 
-  Tetris *tetris{new Tetris()};
-  tetris->run();
+  Tetris tetris;
+  tetris.run();
 
-  delete tetris;
   return 0;
 }

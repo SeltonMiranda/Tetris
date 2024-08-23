@@ -13,6 +13,7 @@ class Piece {
     int type;
     int x;
     int y;
+    int color;
     std::array<std::array<int, 4>, 4> shape;
     Piece(int startType, int startX, int startY);
     ~Piece() = default;

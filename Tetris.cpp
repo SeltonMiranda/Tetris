@@ -1,12 +1,14 @@
 #include "Tetris.hpp"
 #include <iostream>
+#include <termios.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 Tetris::Tetris() : gameOver{false}, fps{60}, score{0} {
   for (int y = 0; y < Tetris::HEIGHT; y++) {
     for (int x = 0; x < Tetris::WIDTH; x++) {
       if (y == 0 || y == Tetris::HEIGHT - 1 ||
-          x == 0 || x == Tetris::WIDTH  - 1 ) {
+        x == 0 || x == Tetris::WIDTH  - 1 ) {
         this->board[y][x] = 1;
       } else {
         this->board[y][x] = 0;
@@ -110,7 +112,7 @@ bool Tetris::collided(int offx, int offy) {
         int px{this->piece->x + x + offx};
         int py{this->piece->y + y + offy};
         if (px < 0 || px >= Tetris::WIDTH || 
-            py < 0 || py >= Tetris::HEIGHT) 
+          py < 0 || py >= Tetris::HEIGHT) 
           return true;
 
         if (this->board[py][px] == 1)
@@ -156,7 +158,7 @@ void Tetris::run() {
   this->drawBoard();
   char key;
   while (!this->gameOver) {
-    std::cin >> key;
+    key = this->getch();
     switch(key) {
       case 'w': this->rotate(); break;
       case 'a': this->movePiece(-1, 0); break;
@@ -174,7 +176,7 @@ void Tetris::run() {
     this->clearFullRows();
     this->movePiece(0, 1);
     this->drawBoard();
-    usleep(500000);
+    usleep(1500 * 1000 / (this->fps / 10));
   }
 }
 
@@ -247,4 +249,30 @@ void Tetris::clearFullRows() {
       this->pullBlocksDown(y - 1);
     }
   }
+}
+
+int Tetris::getch() {
+  int ch;
+  struct termios oldattr, newattr;
+
+  // Save current terminal attributes
+  tcgetattr(STDIN_FILENO, &oldattr);
+  newattr = oldattr;
+
+  // Set terminal to no buffer or echo mode
+  newattr.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
+
+  // Make reading non-bloking
+  int oldFlags = fcntl(STDIN_FILENO, F_GETFL, 0);
+  fcntl(STDIN_FILENO, F_SETFL, oldFlags | O_NONBLOCK);
+
+  // Read input
+  ch = getchar();
+
+  // Restore old attributes
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
+  fcntl(STDIN_FILENO, F_SETFL, oldFlags);
+
+  return ch; 
 }

@@ -7,15 +7,16 @@
 class Tetris {
   private:
     // Constants
-    static constexpr int HEIGHT = 20; 
-    static constexpr int WIDTH = 15; 
+    static constexpr int HEIGHT = 25; 
+    static constexpr int WIDTH = 18; 
 
     std::array<std::array<int, Tetris::WIDTH>, Tetris::HEIGHT> board;
     Piece* piece;
     bool gameOver;
     int fps;
     int score;
-
+    
+    int getch();
   public:
     Tetris();
     void drawBoard();

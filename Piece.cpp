@@ -52,7 +52,8 @@ const std::array<std::array<std::array<int, 4>, 4>, 7> Piece::tetrominos = {{
 }};
 
 Piece::Piece(int startType, int startX, int startY)
-: type{startType}, x{startX}, y{startY}, shape{tetrominos[startType]} {}
+: type{startType}, x{startX}, y{startY}, color{startType},
+  shape{tetrominos[startType]} {}
 
 
 
