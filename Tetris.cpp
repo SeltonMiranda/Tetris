@@ -1,8 +1,9 @@
-#include "Tetris.hpp"
 #include <iostream>
 #include <termios.h>
 #include <fcntl.h>
 #include <unistd.h>
+
+#include "Tetris.hpp"
 
 Tetris::Tetris() : gameOver{false}, fps{60}, score{0} {
   for (int y = 0; y < Tetris::HEIGHT; y++) {
@@ -20,7 +21,7 @@ Tetris::Tetris() : gameOver{false}, fps{60}, score{0} {
 }
 
 void Tetris::createPiece() {
-  this->piece = new Piece(rand() % 7, Tetris::WIDTH/2 - 2, 1);
+  this->piece = std::make_unique<Piece>(rand() % 7, Tetris::WIDTH/2 - 2, 1);
   if (collided(0, 0)) this->gameOver = !this->gameOver;
 }
 
@@ -141,7 +142,6 @@ void Tetris::movePiece(int dx, int dy) {
     this->piece->y += dy;
   } else if (dy > 0) { // Case when piece collided with last row
     lockPiece();
-    delete this->piece;
     this->createPiece();
   }
 }
@@ -169,14 +169,13 @@ void Tetris::run() {
     }
 
     if (this->gameOver) {
-      delete this->piece;
       break;
     }
 
     this->clearFullRows();
     this->movePiece(0, 1);
     this->drawBoard();
-    usleep(1500 * 1000 / (this->fps / 10));
+    usleep(2500 * 1000 / (this->fps / 10));
   }
 }
 
