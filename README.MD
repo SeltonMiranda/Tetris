@@ -4,10 +4,10 @@ Only works in linux systems, require g++ compiler
 
 # TODO List
 - [ ] Rotate around the piece center
-- [ ] Include ncurses library to get buffer input instantly
+- [x] Include ncurses library to get buffer input instantly - Made I guess? It'll work for now
 - [x] Clear completed rows
-- [ ] Diferentiate each piece by a color 
-- [ ] Make it runs slightly faster
+- [ ] Differentiate each piece by a color 
+- [x] Make it runs slightly faster
 - [ ] Encapsulate members from class 
 - [ ] Create a queue of next pieces
 - [ ] Make a scoreboard
