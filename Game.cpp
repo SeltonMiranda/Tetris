@@ -188,7 +188,7 @@ void Game::run() {
     this->clearFullRows();
     this->movePiece(0, 1);
     this->drawBoard();
-    usleep(2500 * 1000 / (this->fps / 10));
+    usleep(4000 * 1000 / (this->fps / 10));
   }
 }
 
@@ -235,7 +235,7 @@ void Game::removePieceShadow(int shadowX, int shadowY) {
 
 void Game::pullBlocksDown(int startRow) {
   for (int y = startRow; y > 0; y--) {
-    for (int x = 1; x < Constants::WIDTH - 2; x++) {
+    for (int x = 1; x <= Constants::WIDTH - 2; x++) {
       if (this->board[y][x] >= 2 && this->board[y][x] <= 8) {
         this->board[y + 1][x] = this->board[y][x];
         this->board[y][x] = 0;
@@ -258,7 +258,7 @@ void Game::clearFullRows() {
       // Erase the blocks which are in a full row
       for (int x = 1; x <= Constants::WIDTH - 2; x++)
         this->board[y][x] = 0;
-      this->pullBlocksDown(y - 1);
+      this->pullBlocksDown(y);
       this->score += 100;
     }
   }
