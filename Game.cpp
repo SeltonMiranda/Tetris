@@ -2,7 +2,6 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <utility>
 
 #include "Game.hpp"
 #include "Constants.hpp"
