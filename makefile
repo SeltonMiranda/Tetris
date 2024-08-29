@@ -1,6 +1,6 @@
 CFLAGS = -Wall -Wextra -Wshadow
-LIBS = Piece.o Tetris.o
-MAIN = Game
+LIBS = Piece.o Game.o Constants.o
+MAIN = Tetris
 
 $(MAIN) : main.o $(LIBS)
 	g++ -o $(MAIN) main.o $(LIBS)
