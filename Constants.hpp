@@ -17,6 +17,8 @@ public:
   static constexpr int PIECESIZE = 4;
 
   static const std::string CLEARSCREEN;
+  static const std::string HIDECURSOR;
+  static const std::string SHOWCURSOR;
 
   // Colors
   static const std::string RESET;

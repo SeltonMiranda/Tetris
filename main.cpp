@@ -5,9 +5,13 @@
 
 int main() {
   std::srand(std::time(nullptr));
-
   Tetris::Game game;
-  game.run();
+
+  try {
+    game.run();
+  } catch (std::exception& e) {
+    std::cout << e.what() << std::endl;
+  }
 
   return 0;
 }

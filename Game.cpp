@@ -1,5 +1,8 @@
+#include <asm-generic/ioctls.h>
 #include <iostream>
+#include <stdexcept>
 #include <termios.h>
+#include <sys/ioctl.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -9,6 +12,12 @@
 namespace Tetris {
 
 Game::Game() : gameOver{false}, fps{60}, score{0} {
+  auto [rows, cols] = this->getsTerminalSize();
+  this->termWidth = rows;
+  this->termHeight = cols;
+
+  std::cout << Tetris::Constants::HIDECURSOR;
+
   for (int y = 0; y < Constants::HEIGHT; y++) {
     for (int x = 0; x < Constants::WIDTH; x++) {
       if (y == 0 || y == Constants::HEIGHT - 1 ||
@@ -27,24 +36,23 @@ void Game::startPiece() {
   if (this->collided(0, 0)) this->gameOver = !this->gameOver;
 }
 
-bool Game::isABlock(int pos) const {
-  return 2 <= pos && pos <= 8; 
-}
+bool Game::isABlock(int pos) const { return 2 <= pos && pos <= 8; }
+
+void Game::rotate() { this->piece->rotate(this->board); }
+
+bool Game::isBlankSpace(int pos) const { return pos == 0; }
 
 bool Game::isInBoard(int x, int y) const {
-  return (x >= 0 && x < Tetris::Constants::WIDTH - 1 && y >= 0 && y < Tetris::Constants::HEIGHT - 1);
+  return (x > 0 && x < Tetris::Constants::WIDTH - 1 && y > 0 && y < Tetris::Constants::HEIGHT - 1);
 }
 
 void Game::placePieceOnBoard() {
   for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
     for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
-      if (this->piece->shape[y][x] >= 2 &&
-        this->piece->shape[y][x] <= 8) {
+      if (this->isABlock(this->piece->shape[y][x])) {
         int boardY{this->piece->getY() + y};
         int boardX{this->piece->getX() + x};
-        if (this->isInBoard(boardX,  boardY)) {
-          this->board.at(boardY).at(boardX) = this->piece->getType();
-        }
+        if (this->isInBoard(boardX,  boardY)) this->board.at(boardY).at(boardX) = this->piece->getType();
       }
     }
   }
@@ -53,13 +61,11 @@ void Game::placePieceOnBoard() {
 void Game::removePieceFromBoard() {
   for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
     for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
-      if (this->piece->shape[y][x] >= 2 &&
-        this->piece->shape[y][x] <= 8) {
+      if (this->isABlock(this->piece->shape[y][x])) {
         int boardY{this->piece->getY() + y};
         int boardX{this->piece->getX() + x};
-        if (this->isInBoard(boardX, boardY)) {
-          this->board[boardY][boardX] = 0;
-        }
+
+        if (this->isInBoard(boardX, boardY)) this->board[boardY][boardX] = 0;
       }
     }
   } 
@@ -72,14 +78,22 @@ void Game::drawBoard() {
   this->drawPieceShadow(shadowX, shadowY);
   this->placePieceOnBoard();
 
+  int startX{this->termWidth  / 2 + Tetris::Constants::WIDTH};
+  int startY{this->termHeight / 2 + Tetris::Constants::HEIGHT};
+
+  // Moves cursor to half terminal screen
+  std::cout << "\033[" << startY << ";" << startX << "H";
+
   for (int y = 0; y < Constants::HEIGHT; y++) {
+    std::cout << "\033[" << (startY + y) << ";" << startX << "H";
+
     for (int x = 0; x < Constants::WIDTH; x++) {
       if (this->board[y][x] == 1) {
         std::cout << "#";
       } else if (this->board[y][x] == 9) {
         std::cout << Tetris::Constants::LIGHTGRAY;
         std::cout << "+" << Tetris::Constants::RESET;
-      } else if (this->board[y][x] >= 2 && this->board[y][x] <= 8) {
+      } else if (this->isABlock(this->board[y][x])) {
         this->piece->draw(this->board[y][x]);
       } else {
         std::cout << " ";
@@ -87,28 +101,20 @@ void Game::drawBoard() {
     }
     std::cout << std::endl;
   }
+
   this->removePieceFromBoard();
   this->removePieceShadow(shadowX, shadowY);
-}
-
-void Game::rotate() {
-  this->piece->rotate(this->board);
 }
 
 bool Game::collided(int offx, int offy) {
   for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
     for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
-      if (this->piece->shape[y][x] >= 2 &&
-        this->piece->shape[y][x] <= 8) {
+      if (this->isABlock(this->piece->shape[y][x])) {
         int px{this->piece->getX() + x + offx};
         int py{this->piece->getY() + y + offy};
-        if (px < 0 || px >= Constants::WIDTH || 
-          py < 0 || py >= Constants::HEIGHT) 
-          return true;
 
-        if (this->board[py][px] >= 1 &&
-          this->board[py][px] <= 8)
-          return true;
+        if (!this->isInBoard(px, py)) return true;
+        if (!this->isBlankSpace(this->board[py][px])) return true;
       }
     }
   }
@@ -118,12 +124,12 @@ bool Game::collided(int offx, int offy) {
 void Game::lockPiece() {
   for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
     for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
+
       int px{this->piece->getX()};
       int py{this->piece->getY()};
-      if (this->piece->shape[y][x] >= 2 &&
-        this->piece->shape[y][x] <= 8) {
+
+      if (this->isABlock(this->piece->shape[y][x])) 
         this->board[py + y][px + x] = this->piece->getType();
-      }
     }
   }
 }
@@ -168,7 +174,7 @@ void Game::run() {
     this->clearFullRows();
     this->movePiece(0, 1);
     this->drawBoard();
-    usleep(Tetris::Constants::PIECESIZE000 * 1000 / (this->fps / 10));
+    usleep(4000 * 1000 / (this->fps / 10));
   }
 }
 
@@ -176,9 +182,7 @@ std::pair<int, int> Game::calculateShadowPosition() {
   int sY{this->piece->getY()};
   int sX{this->piece->getX()};
 
-  while (!this->collided(0, sY + 1 - this->piece->getY()))
-    sY++;
-
+  while (!this->collided(0, sY + 1 - this->piece->getY())) sY++;
   return {sX, sY};
 }
 
@@ -186,13 +190,10 @@ std::pair<int, int> Game::calculateShadowPosition() {
 void Game::drawPieceShadow(int shadowX, int shadowY) {
   for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
     for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
-      if (this->piece->shape[y][x] >= 2 &&
-        this->piece->shape[y][x] <= 8) {
+      if (this->isABlock(this->piece->shape[y][x])) {
         int boardY{shadowY + y};
         int boardX{shadowX + x};
-        if (boardY >= 0 && boardY < Constants::HEIGHT && boardX >= 0 && boardX < Constants::WIDTH) {
-          this->board[boardY][boardX] = 9;
-        }
+        if (this->isInBoard(boardX, boardY)) this->board[boardY][boardX] = 9;
       }
     }
   }
@@ -201,13 +202,10 @@ void Game::drawPieceShadow(int shadowX, int shadowY) {
 void Game::removePieceShadow(int shadowX, int shadowY) {
   for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
     for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
-      if (this->piece->shape[y][x] >= 2 &&
-        this->piece->shape[y][x] <= 8) {
+      if (this->isABlock(this->piece->shape[y][x])) {
         int boardY{shadowY + y};
         int boardX{shadowX + x};
-        if (boardY >= 0 && boardY < Constants::HEIGHT && boardX >= 0 && boardX < Constants::WIDTH) {
-          this->board[boardY][boardX] = 0;
-        }
+        if (this->isInBoard(boardX, boardY)) this->board[boardY][boardX] = 0;
       }
     }
   } 
@@ -216,7 +214,7 @@ void Game::removePieceShadow(int shadowX, int shadowY) {
 void Game::pullBlocksDown(int startRow) {
   for (int y = startRow; y > 0; y--) {
     for (int x = 1; x <= Constants::WIDTH - 2; x++) {
-      if (this->board[y][x] >= 2 && this->board[y][x] <= 8) {
+      if (this->isABlock(this->board[y][x])) {
         this->board[y + 1][x] = this->board[y][x];
         this->board[y][x] = 0;
       }
@@ -228,7 +226,7 @@ void Game::clearFullRows() {
   for (int y = Constants::HEIGHT - 2; y > 0; y--) {
     bool full{true};
     for (int x = 1; x < Constants::WIDTH - 2; x++) {
-      if (this->board[y][x] == 0) {
+      if (this->isBlankSpace(this->board[y][x])) {
         full = false;
         break;
       }
@@ -247,9 +245,19 @@ void Game::clearFullRows() {
 void Game::showScore() const {
   std::cout << Tetris::Constants::CLEARSCREEN;
   std::cout << "Your final score: " << this->score << std::endl;
+  std::cout << Tetris::Constants::SHOWCURSOR;
 }
 
-int Game::getch() {
+std::pair<int, int> Game::getsTerminalSize() const {
+  struct winsize w;
+
+  if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1)
+    throw std::runtime_error{"Failed to get terminal size"};
+
+  return {w.ws_row, w.ws_col};
+}
+
+int Game::getch() const {
   int ch;
   struct termios oldattr, newattr;
 
