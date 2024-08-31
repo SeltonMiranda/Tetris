@@ -27,15 +27,23 @@ void Game::startPiece() {
   if (this->collided(0, 0)) this->gameOver = !this->gameOver;
 }
 
+bool Game::isABlock(int pos) const {
+  return 2 <= pos && pos <= 8; 
+}
+
+bool Game::isInBoard(int x, int y) const {
+  return (x >= 0 && x < Tetris::Constants::WIDTH - 1 && y >= 0 && y < Tetris::Constants::HEIGHT - 1);
+}
+
 void Game::placePieceOnBoard() {
-  for (int y = 0; y < 4; y++) {
-    for (int x = 0; x < 4; x++) {
+  for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
+    for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
       if (this->piece->shape[y][x] >= 2 &&
         this->piece->shape[y][x] <= 8) {
         int boardY{this->piece->getY() + y};
         int boardX{this->piece->getX() + x};
-        if (boardY >= 0 && boardY < Constants::HEIGHT && boardX >= 0 && boardX < Constants::WIDTH) {
-          this->board[boardY][boardX] = this->piece->getType();
+        if (this->isInBoard(boardX,  boardY)) {
+          this->board.at(boardY).at(boardX) = this->piece->getType();
         }
       }
     }
@@ -43,13 +51,13 @@ void Game::placePieceOnBoard() {
 }
 
 void Game::removePieceFromBoard() {
-  for (int y = 0; y < 4; y++) {
-    for (int x = 0; x < 4; x++) {
+  for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
+    for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
       if (this->piece->shape[y][x] >= 2 &&
         this->piece->shape[y][x] <= 8) {
         int boardY{this->piece->getY() + y};
         int boardX{this->piece->getX() + x};
-        if (boardY >= 0 && boardY < Constants::HEIGHT && boardX >= 0 && boardX < Constants::WIDTH) {
+        if (this->isInBoard(boardX, boardY)) {
           this->board[boardY][boardX] = 0;
         }
       }
@@ -83,31 +91,13 @@ void Game::drawBoard() {
   this->removePieceShadow(shadowX, shadowY);
 }
 
-bool Game::canRotate(const std::array<std::array<int, 4>, 4>& rotatedPiece) const {
-  for (int y = 0; y < 4; y++) {
-    for (int x = 0; x < 4; x++) {
-      if (rotatedPiece[y][x] == 1) {
-        int boardx{this->piece->getX() + x};
-        int boardy{this->piece->getY() + y};
-        if (boardy <= 0 || boardy >= Constants::HEIGHT - 1 ||
-          boardx <= 0 || boardx >= Constants::WIDTH - 1 || 
-          (this->board[boardy][boardx] >= 1 &&
-          this->board[boardy][boardx] <= 8))
-          return false;
-      }
-    }
-  }
-
-  return true;
-}
-
 void Game::rotate() {
   this->piece->rotate(this->board);
 }
 
 bool Game::collided(int offx, int offy) {
-  for (int y = 0; y < 4; y++) {
-    for (int x = 0; x < 4; x++) {
+  for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
+    for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
       if (this->piece->shape[y][x] >= 2 &&
         this->piece->shape[y][x] <= 8) {
         int px{this->piece->getX() + x + offx};
@@ -126,8 +116,8 @@ bool Game::collided(int offx, int offy) {
 }
 
 void Game::lockPiece() {
-  for (int y = 0; y < 4; y++) {
-    for (int x = 0; x < 4; x++) {
+  for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
+    for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
       int px{this->piece->getX()};
       int py{this->piece->getY()};
       if (this->piece->shape[y][x] >= 2 &&
@@ -178,7 +168,7 @@ void Game::run() {
     this->clearFullRows();
     this->movePiece(0, 1);
     this->drawBoard();
-    usleep(4000 * 1000 / (this->fps / 10));
+    usleep(Tetris::Constants::PIECESIZE000 * 1000 / (this->fps / 10));
   }
 }
 
@@ -194,8 +184,8 @@ std::pair<int, int> Game::calculateShadowPosition() {
 
 
 void Game::drawPieceShadow(int shadowX, int shadowY) {
-  for (int y = 0; y < 4; y++) {
-    for (int x = 0; x < 4; x++) {
+  for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
+    for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
       if (this->piece->shape[y][x] >= 2 &&
         this->piece->shape[y][x] <= 8) {
         int boardY{shadowY + y};
@@ -209,8 +199,8 @@ void Game::drawPieceShadow(int shadowX, int shadowY) {
 }
 
 void Game::removePieceShadow(int shadowX, int shadowY) {
-  for (int y = 0; y < 4; y++) {
-    for (int x = 0; x < 4; x++) {
+  for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
+    for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
       if (this->piece->shape[y][x] >= 2 &&
         this->piece->shape[y][x] <= 8) {
         int boardY{shadowY + y};

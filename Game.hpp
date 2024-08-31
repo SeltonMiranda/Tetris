@@ -18,13 +18,14 @@ class Game {
     
     int getch();
     void showScore() const;
+    bool isInBoard(int x, int y) const;
+    bool isABlock(int pos) const;
   public:
     Game();
     void drawBoard();
     void placePieceOnBoard();
     void removePieceFromBoard();
 
-    bool canRotate(const std::array<std::array<int, 4>, 4>& rotatedPiece) const;
     void rotate();
     void run();
     bool collided(int offx, int offy);
