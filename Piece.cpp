@@ -33,6 +33,40 @@ void Piece::setY(int y) { this->y = y; }
 int Piece::getType() const { return this->type; }
 void Piece::setType(int type) { this->type = type; }
 
+bool Piece::isBlock(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board, int x, int y) const {
+  return (board.at(y).at(x) >= 1 && board.at(y).at(x) <= 8);
+}
+
+bool Piece::isWithinBounds(int x, int y) const {
+  return (x <= 0 || x >= Tetris::Constants::WIDTH - 1 || y <= 0 || y >= Tetris::Constants::HEIGHT - 1);
+}
+
+bool Piece::canRotate(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board, std::array<std::array<int, Tetris::Constants::PIECESIZE>, Tetris::Constants::PIECESIZE>& rotated) const {
+  for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
+    for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
+      if (rotated.at(y).at(x) >= 2 && rotated.at(y).at(x) <= 8) {
+        int boardx{this->getX() + x};
+        int boardy{this->getY() + y};
+        if (this->isWithinBounds(boardx, boardy) ||
+            this->isBlock(board, boardx, boardy))
+          return false;
+      }
+    }
+  }
+  return true;
+}
+
+void Piece::rotate(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board) {
+  std::array<std::array<int, Tetris::Constants::PIECESIZE>, Tetris::Constants::PIECESIZE> rotated;
+  for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
+    for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
+      rotated[x][3 - y] = this->shape[y][x];
+    }
+  }
+
+  if (this->canRotate(board, rotated)) this->shape = rotated;
+}
+
 Piece& Piece::operator+=(const std::pair<int, int>& offset) {
   this->x += offset.first;
   this->y += offset.second;

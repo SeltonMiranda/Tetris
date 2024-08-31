@@ -10,8 +10,7 @@ class Piece {
   private:
     int type, x, y;
   public:
-    std::array<std::array<int, Tetris::Constants::PIECESIZE>,
-                            Tetris::Constants::PIECESIZE> shape;
+    std::array<std::array<int, Tetris::Constants::PIECESIZE>, Tetris::Constants::PIECESIZE> shape;
 
     static std::unique_ptr<Tetris::Piece> createPiece(int type, int x, int y);
 
@@ -31,6 +30,12 @@ class Piece {
 
     int getType() const; 
     void setType(int type);
+
+    bool isBlock(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board, int x, int y) const;
+    bool isWithinBounds(int x, int y) const;
+
+    bool canRotate(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board, std::array<std::array<int, Tetris::Constants::PIECESIZE>, Tetris::Constants::PIECESIZE>& rotated) const;
+    void rotate(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board);
 
     // Overload the += operator for position adjustment
     Piece& operator+=(const std::pair<int, int>& offset);

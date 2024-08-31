@@ -89,8 +89,8 @@ bool Game::canRotate(const std::array<std::array<int, 4>, 4>& rotatedPiece) cons
       if (rotatedPiece[y][x] == 1) {
         int boardx{this->piece->getX() + x};
         int boardy{this->piece->getY() + y};
-        if (boardy < 0 || boardy >= Constants::HEIGHT ||
-          boardx < 0 || boardx >= Constants::WIDTH || 
+        if (boardy <= 0 || boardy >= Constants::HEIGHT - 1 ||
+          boardx <= 0 || boardx >= Constants::WIDTH - 1 || 
           (this->board[boardy][boardx] >= 1 &&
           this->board[boardy][boardx] <= 8))
           return false;
@@ -102,17 +102,7 @@ bool Game::canRotate(const std::array<std::array<int, 4>, 4>& rotatedPiece) cons
 }
 
 void Game::rotate() {
-  std::array<std::array<int, 4>, 4> rotated;
-
-  for (int y = 0; y < 4; y++) {
-    for (int x = 0; x < 4; x++) {
-      rotated[x][3 - y] = this->piece->shape[y][x];
-    }
-  }
-
-  if (canRotate(rotated)) {
-    this->piece->shape = rotated;
-  }
+  this->piece->rotate(this->board);
 }
 
 bool Game::collided(int offx, int offy) {

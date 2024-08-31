@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Wextra -Wshadow
+CFLAGS = -Wall -Wextra
 LIBS = Piece.o Game.o Constants.o
 MAIN = Tetris
 
