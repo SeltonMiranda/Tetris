@@ -13,8 +13,8 @@ namespace Tetris {
 
 Game::Game() : gameOver{false}, fps{60}, score{0} {
   auto [rows, cols] = this->getsTerminalSize();
-  this->termWidth = rows;
-  this->termHeight = cols;
+  this->termWidth = cols;
+  this->termHeight = rows;
 
   std::cout << Tetris::Constants::HIDECURSOR;
 
@@ -32,8 +32,23 @@ Game::Game() : gameOver{false}, fps{60}, score{0} {
 }
 
 void Game::startPiece() {
-  this->piece = Tetris::Piece::createPiece(rand() % 7, Tetris::Constants::WIDTH/2 - 2, 1);
-  if (this->collided(0, 0)) this->gameOver = !this->gameOver;
+  while (this->blocks.size() < 5) {
+    int type;
+
+    do {
+      type = rand() % Tetris::Constants::TYPES;
+    } while (!this->blocks.empty() && type == this->blocks.front()->getType());
+
+    this->blocks.push(Tetris::Piece::createPiece(type, Tetris::Constants::WIDTH/2 - 2, 1));
+  }
+
+  this->piece = std::move(this->blocks.front());
+  this->blocks.pop();
+
+  if (this->collided(0, 0)) { // If it spawns and already collided it's game over
+    this->gameOver = !this->gameOver;
+    this->showScore();
+  } 
 }
 
 bool Game::isABlock(int pos) const { return 2 <= pos && pos <= 8; }
@@ -41,6 +56,8 @@ bool Game::isABlock(int pos) const { return 2 <= pos && pos <= 8; }
 void Game::rotate() { this->piece->rotate(this->board); }
 
 bool Game::isBlankSpace(int pos) const { return pos == 0; }
+
+bool Game::collided(int offx, int offy) { return this->piece->collided(this->board, offx, offy); }
 
 bool Game::isInBoard(int x, int y) const {
   return (x > 0 && x < Tetris::Constants::WIDTH - 1 && y > 0 && y < Tetris::Constants::HEIGHT - 1);
@@ -78,14 +95,13 @@ void Game::drawBoard() {
   this->drawPieceShadow(shadowX, shadowY);
   this->placePieceOnBoard();
 
-  int startX{this->termWidth  / 2 + Tetris::Constants::WIDTH};
-  int startY{this->termHeight / 2 + Tetris::Constants::HEIGHT};
+  int startX{(this->termWidth - Tetris::Constants::WIDTH) / 2};
 
   // Moves cursor to half terminal screen
-  std::cout << "\033[" << startY << ";" << startX << "H";
+  std::cout << "\033[" << 2 << ";" << startX << "H";
 
   for (int y = 0; y < Constants::HEIGHT; y++) {
-    std::cout << "\033[" << (startY + y) << ";" << startX << "H";
+    std::cout << "\033[" << (2 + y) << ";" << startX << "H";
 
     for (int x = 0; x < Constants::WIDTH; x++) {
       if (this->board[y][x] == 1) {
@@ -106,21 +122,6 @@ void Game::drawBoard() {
   this->removePieceShadow(shadowX, shadowY);
 }
 
-bool Game::collided(int offx, int offy) {
-  for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
-    for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
-      if (this->isABlock(this->piece->shape[y][x])) {
-        int px{this->piece->getX() + x + offx};
-        int py{this->piece->getY() + y + offy};
-
-        if (!this->isInBoard(px, py)) return true;
-        if (!this->isBlankSpace(this->board[py][px])) return true;
-      }
-    }
-  }
-  return false;
-}
-
 void Game::lockPiece() {
   for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
     for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
@@ -135,7 +136,7 @@ void Game::lockPiece() {
 }
 
 void Game::movePiece(int dx, int dy) {
-  if (!collided(dx, dy)) {
+  if (!this->collided(dx, dy)) {
     *this->piece += std::make_pair(dx, dy);
   } else if (dy > 0) { // Case when piece collided with last row
     lockPiece();
@@ -162,12 +163,11 @@ void Game::run() {
       case 's': this->softDrop(); break;
       case 'd': this->movePiece( 1, 0); break;
       case 'e': this->hardDrop(); break;
-      case 'q': this->gameOver = !this->gameOver;
-        this->showScore();
-      break;
+      case 'q': this->gameOver = !this->gameOver; break;
     }
 
     if (this->gameOver) {
+      this->showScore();
       break;
     }
 
@@ -269,7 +269,9 @@ int Game::getch() const {
   newattr.c_lflag &= ~(ICANON | ECHO);
   tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
 
+  // Minimun number of characters for non-blocking read
   newattr.c_cc[VMIN] = 0;
+
   // Make reading non-bloking
   int oldFlags = fcntl(STDIN_FILENO, F_GETFL, 0);
   fcntl(STDIN_FILENO, F_SETFL, oldFlags | O_NONBLOCK);

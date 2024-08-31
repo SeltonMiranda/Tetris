@@ -2,6 +2,7 @@
 
 #include <array>
 #include <memory>
+#include <queue>
 
 #include "Piece.hpp"
 #include "Constants.hpp"
@@ -9,15 +10,17 @@
 namespace Tetris {
 class Game {
   private:
-    std::array<std::array<int, Constants::WIDTH>,
-      Constants::HEIGHT> board;
+    std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT> board;
     std::unique_ptr<Piece> piece;
+    std::queue<std::unique_ptr<Piece>> blocks;
     bool gameOver;
     int fps;
     int score;
     int termWidth;
     int termHeight;
 
+    // Creates a new block
+    void startPiece();
     
     // Returns rows and columns, respectively, from terminal size
     std::pair<int, int> getsTerminalSize() const; 
@@ -86,7 +89,5 @@ class Game {
     // Returns the coordinates of a block shadow
     std::pair<int, int> calculateShadowPosition();
     
-    // Creates a new block
-    void startPiece();
 };
 }

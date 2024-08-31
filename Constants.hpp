@@ -16,6 +16,7 @@ public:
   // Grid block size
   static constexpr int PIECESIZE = 4;
 
+  // Escape sequences
   static const std::string CLEARSCREEN;
   static const std::string HIDECURSOR;
   static const std::string SHOWCURSOR;
@@ -33,7 +34,6 @@ public:
   static const std::string LIGHTBLUE;
 
   // Blocks shape
-  static const std::array<std::array<std::array<int, 4>,
-                                          4>, 7> tetrominos;
+  static const std::array<std::array<std::array<int, 4>, 4>, 7> tetrominos;
 };
 }

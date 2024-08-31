@@ -38,7 +38,7 @@ bool Piece::isBlock(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris
 }
 
 bool Piece::isWithinBounds(int x, int y) const {
-  return (x <= 0 || x >= Tetris::Constants::WIDTH - 1 || y <= 0 || y >= Tetris::Constants::HEIGHT - 1);
+  return (x > 0 || x < Tetris::Constants::WIDTH - 1 || y > 0 || y < Tetris::Constants::HEIGHT - 1);
 }
 
 bool Piece::canRotate(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board, std::array<std::array<int, Tetris::Constants::PIECESIZE>, Tetris::Constants::PIECESIZE>& rotated) const {
@@ -47,7 +47,7 @@ bool Piece::canRotate(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetr
       if (rotated.at(y).at(x) >= 2 && rotated.at(y).at(x) <= 8) {
         int boardx{this->getX() + x};
         int boardy{this->getY() + y};
-        if (this->isWithinBounds(boardx, boardy) ||
+        if (!this->isWithinBounds(boardx, boardy) ||
             this->isBlock(board, boardx, boardy))
           return false;
       }
@@ -65,6 +65,21 @@ void Piece::rotate(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris:
   }
 
   if (this->canRotate(board, rotated)) this->shape = rotated;
+}
+
+bool Piece::collided(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board, int offx, int offy) const {
+  for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
+    for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
+      if (2 <= this->shape[y][x] && this->shape[y][x] <= 8) {
+        int px{this->getX() + x + offx};
+        int py{this->getY() + y + offy};
+
+        if (!this->isWithinBounds(px, py)) return true;
+        if (board[py][px] != 0) return true;
+      }
+    }
+  }
+  return false;
 }
 
 Piece& Piece::operator+=(const std::pair<int, int>& offset) {
