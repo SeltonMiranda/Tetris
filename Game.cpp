@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "Game.hpp"
+#include "Piece.hpp"
 #include "Constants.hpp"
 
 namespace Tetris {
@@ -37,7 +38,7 @@ void Game::startPiece() {
 
     do {
       type = rand() % Tetris::Constants::TYPES;
-    } while (!this->blocks.empty() && type == this->blocks.front()->getType());
+    } while (!this->blocks.empty() && type == this->blocks.back()->getType());
 
     this->blocks.push(Tetris::Piece::createPiece(type, Tetris::Constants::WIDTH/2 - 2, 1));
   }
@@ -69,6 +70,7 @@ void Game::placePieceOnBoard() {
       if (this->isABlock(this->piece->shape[y][x])) {
         int boardY{this->piece->getY() + y};
         int boardX{this->piece->getX() + x};
+
         if (this->isInBoard(boardX,  boardY)) this->board.at(boardY).at(boardX) = this->piece->getType();
       }
     }
@@ -174,7 +176,7 @@ void Game::run() {
     this->clearFullRows();
     this->movePiece(0, 1);
     this->drawBoard();
-    usleep(4000 * 1000 / (this->fps / 10));
+    usleep(3500 * 1000 / (this->fps / 10));
   }
 }
 

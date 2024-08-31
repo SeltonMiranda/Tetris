@@ -1,5 +1,5 @@
 #include "Piece.hpp"
-#include "Constants.hpp"
+#include "TetrisTypes.hpp"
 
 namespace Tetris {
 
@@ -11,8 +11,8 @@ std::unique_ptr<Tetris::Piece> Tetris::Piece::createPiece(int type, int x, int y
   return std::make_unique<Tetris::Piece>(type, x, y);
 }
 
-void Piece::draw(int t) const {
-  switch(t) {
+void Piece::draw(int type) const {
+  switch(type) {
     case 2: std::cout << Tetris::Constants::LIGHTBLUE; break;
     case 3: std::cout << Tetris::Constants::GREEN; break;
     case 4: std::cout << Tetris::Constants::YELLOW; break;
@@ -33,15 +33,16 @@ void Piece::setY(int y) { this->y = y; }
 int Piece::getType() const { return this->type; }
 void Piece::setType(int type) { this->type = type; }
 
-bool Piece::isBlock(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board, int x, int y) const {
+bool Piece::isBlock(Tetris::Board& board, int x, int y) const {
   return (board.at(y).at(x) >= 1 && board.at(y).at(x) <= 8);
 }
 
 bool Piece::isWithinBounds(int x, int y) const {
-  return (x > 0 || x < Tetris::Constants::WIDTH - 1 || y > 0 || y < Tetris::Constants::HEIGHT - 1);
+  return (x > 0 || x < Tetris::Constants::WIDTH  - 1 ||
+          y > 0 || y < Tetris::Constants::HEIGHT - 1  );
 }
 
-bool Piece::canRotate(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board, std::array<std::array<int, Tetris::Constants::PIECESIZE>, Tetris::Constants::PIECESIZE>& rotated) const {
+bool Piece::canRotate(Tetris::Board& board, Tetris::Shape& rotated) const {
   for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
     for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
       if (rotated.at(y).at(x) >= 2 && rotated.at(y).at(x) <= 8) {
@@ -56,8 +57,8 @@ bool Piece::canRotate(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetr
   return true;
 }
 
-void Piece::rotate(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board) {
-  std::array<std::array<int, Tetris::Constants::PIECESIZE>, Tetris::Constants::PIECESIZE> rotated;
+void Piece::rotate(Tetris::Board& board) {
+  Tetris::Shape rotated;
   for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
     for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
       rotated[x][3 - y] = this->shape[y][x];
@@ -67,7 +68,7 @@ void Piece::rotate(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris:
   if (this->canRotate(board, rotated)) this->shape = rotated;
 }
 
-bool Piece::collided(std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT>& board, int offx, int offy) const {
+bool Piece::collided(Tetris::Board& board, int offx, int offy) const {
   for (int y = 0; y < Tetris::Constants::PIECESIZE; y++) {
     for (int x = 0; x < Tetris::Constants::PIECESIZE; x++) {
       if (2 <= this->shape[y][x] && this->shape[y][x] <= 8) {

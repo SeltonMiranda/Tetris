@@ -1,16 +1,16 @@
 #pragma once
 
-#include <array>
-#include <memory>
+// System includes
 #include <queue>
 
+// Personal includes
 #include "Piece.hpp"
-#include "Constants.hpp"
+#include "TetrisTypes.hpp"
 
 namespace Tetris {
 class Game {
   private:
-    std::array<std::array<int, Tetris::Constants::WIDTH>, Tetris::Constants::HEIGHT> board;
+    Tetris::Board board;
     std::unique_ptr<Piece> piece;
     std::queue<std::unique_ptr<Piece>> blocks;
     bool gameOver;
