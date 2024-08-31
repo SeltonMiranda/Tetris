@@ -8,8 +8,8 @@ Only works in linux systems, require g++ compiler
 - [x] Clear completed rows
 - [x] Differentiate each piece by a color 
 - [x] Make it runs slightly faster
-- [ ] Encapsulate members from class 
-- [ ] Create a queue of next pieces
+- [x] Encapsulate members from class 
+- [x] Create a queue of next pieces
 - [x] Make a scoreboard
 
 ## AFTER ALL IT IS DONE ABOVE
