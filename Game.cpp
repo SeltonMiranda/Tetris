@@ -115,14 +115,14 @@ void Game::drawBoard() {
 
     for (int x = 0; x < Constants::WIDTH; x++) {
       if (this->getBoard().at(y).at(x) == 1) {
-        std::cout << "#";
+        std::cout << Tetris::Constants::BLOCK;
       } else if (this->getBoard().at(y).at(x) == 9) {
         std::cout << Tetris::Constants::LIGHTGRAY;
-        std::cout << "+" << Tetris::Constants::RESET;
+        std::cout << Tetris::Constants::SHADOW << Tetris::Constants::RESET;
       } else if (this->isABlock(this->getBoard().at(y).at(x))) {
         this->piece->draw(this->getBoard().at(y).at(x));
       } else {
-        std::cout << " ";
+        std::cout << Tetris::Constants::EMPTY;
       }
     }
     std::cout << std::endl;

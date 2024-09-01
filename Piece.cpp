@@ -22,7 +22,7 @@ void Piece::draw(const int type) const {
     case 7: std::cout << Tetris::Constants::RED; break;
     case 8: std::cout << Tetris::Constants::CYAN; break;
   }
-  std::cout << "#" << Tetris::Constants::RESET;
+  std::cout << Tetris::Constants::BLOCK << Tetris::Constants::RESET;
 }
 
 int Piece::getX() const { return this->x; }
