@@ -7,9 +7,9 @@
 #include <unistd.h>
 
 // Personal includes
-#include "Game.hpp"
-#include "Constants.hpp"
-#include "Piece.hpp"
+#include "../includes/Game.hpp"
+#include "../includes/Constants.hpp"
+#include "../includes/Piece.hpp"
 
 namespace Tetris {
 

@@ -4,7 +4,7 @@
 #include <memory>
 
 // Personal includes
-#include "TetrisTypes.hpp"
+#include "./TetrisTypes.hpp"
 
 namespace Tetris {
 class Piece {

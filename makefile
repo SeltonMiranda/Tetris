@@ -1,20 +1,30 @@
-CFLAGS = -Wall -Wextra
-LIBS = Piece.o Game.o Constants.o
+INCLUDES_DIR = includes
+SRC_DIR = src
+BUILD_DIR = build
+
+CFLAGS = -Wall -Wextra -I$(INCLUDES_DIR)
+LIBS = $(BUILD_DIR)/Piece.o $(BUILD_DIR)/Game.o $(BUILD_DIR)/Constants.o
 MAIN = Tetris
 
-$(MAIN) : main.o $(LIBS)
-	g++ -o $(MAIN) main.o $(LIBS) $(CFLAGS)
+SRCS = $(wildcard $(SRC_DIR)/*.cpp)
+OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
 
-Piece.o: Piece.cpp Piece.hpp TetrisTypes.hpp
-	g++ -c $< $(CFLAGS)
+$(MAIN): $(BUILD_DIR)/main.o $(LIBS)
+	@mkdir -p $(dir $@)
+	g++ -o $(MAIN) $(BUILD_DIR)/main.o $(LIBS) $(CFLAGS)
 
-Game.o: Game.cpp Game.hpp TetrisTypes.hpp
-	g++ -c $< $(CFLAGS)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCLUDES_DIR)/%.hpp
+	@mkdir -p $(dir $@)
+	g++ -c $< -o $@ $(CFLAGS)
 
-%.o : %.cpp %.hpp
-	g++ -c $< $(CFLAGS)
+$(BUILD_DIR)/main.o: $(SRC_DIR)/main.cpp
+	@mkdir -p $(dir $@)
+	g++ -c $< -o $@ $(CFLAGS)
 
-clean: 
-	rm -f *.o *.gch
+clean:
+	rm -rf $(BUILD_DIR)
+
 purge:
-	rm -f *.o *.gch $(MAIN)
+	rm -rf $(MAIN) $(BUILD_DIR)
+
+.phony: clean purge all

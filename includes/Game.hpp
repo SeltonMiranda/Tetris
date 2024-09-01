@@ -4,8 +4,8 @@
 #include <queue>
 
 // Personal includes
-#include "Piece.hpp"
-#include "TetrisTypes.hpp"
+#include "./Piece.hpp"
+#include "./TetrisTypes.hpp"
 
 namespace Tetris {
 class Game {
