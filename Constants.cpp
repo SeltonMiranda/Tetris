@@ -1,4 +1,4 @@
-#include "../includes/Constants.hpp"
+#include "Constants.hpp"
 
 namespace Tetris {
 

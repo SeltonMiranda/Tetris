@@ -1,6 +1,6 @@
-#include "../includes/Piece.hpp"
-#include "../includes/Constants.hpp"
-#include "../includes/TetrisTypes.hpp"
+#include "Piece.hpp"
+#include "Constants.hpp"
+#include "TetrisTypes.hpp"
 
 namespace Tetris {
 
