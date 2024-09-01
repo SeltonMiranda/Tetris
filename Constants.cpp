@@ -6,6 +6,10 @@ const std::string Tetris::Constants::CLEARSCREEN{"\033[2J\033[1;1H"};
 const std::string Tetris::Constants::HIDECURSOR{"\033[?25l"};
 const std::string Tetris::Constants::SHOWCURSOR{"\033[?25h"};
 
+const std::string Tetris::Constants::SHADOW{"+"};
+const std::string Tetris::Constants::BLOCK{"#"};
+const std::string Tetris::Constants::EMPTY{" "};
+
 const std::string Tetris::Constants::RESET{"\033[0m"};
 const std::string Tetris::Constants::RED{"\033[31m"};
 const std::string Tetris::Constants::GREEN{"\033[32m"};

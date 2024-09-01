@@ -23,22 +23,27 @@ class Game {
     void startPiece();
     
     // Returns rows and columns, respectively, from terminal size
-    std::pair<int, int> getsTerminalSize() const; 
+    const std::pair<int, int> getsTerminalSize() const; 
 
     // Gets the input from stdin
     int getch() const;
 
+    // Checks if it's the fence of board
+    bool isFence(const int x, const int y) const;
+
     // Shows the player's score when quit or lost
     void showScore() const;
+
+    Tetris::Board& getBoard();
     
     // Checks if it's within grid board
-    bool isInBoard(int x, int y) const;
+    bool isInBoard(const int x, const int y) const;
 
     // Checks if it's a block
-    bool isABlock(int pos) const;
+    bool isABlock(const int pos) const;
 
     // Checks if it's a blank space, i.e, == 0
-    bool isBlankSpace(int pos) const;
+    bool isBlankSpace(const int pos) const;
 
     // Rotates the block
     void rotate();
@@ -47,13 +52,13 @@ class Game {
     void softDrop();
 
     // Places block at last possible row
-    void hardDrop();
+    void hardDrop() const;
 
     // Clear rows that aren't fully blank space
     void clearFullRows();
 
     // Pull blocks that aren't in a full row
-    void pullBlocksDown(int startRow);
+    void pullBlocksDown(const int startRow);
 
   public:
     // Constructor
@@ -74,20 +79,19 @@ class Game {
     // Game loop
     void run();
 
-    bool collided(int offx, int offy);
-    void movePiece(int dx, int dy);
+    bool collided(const int offx, const int offy) const;
+    void movePiece(const int dx, const int dy);
 
     // Stamps block on board
     void lockPiece();
 
     // Renders block shadow
-    void drawPieceShadow(int shadowX, int shadowY);
+    void drawPieceShadow(const int shadowX, const int shadowY);
 
     // Removes block shadow
-    void removePieceShadow(int shadowX, int shadowY);
+    void removePieceShadow(const int shadowX, const int shadowY);
 
     // Returns the coordinates of a block shadow
-    std::pair<int, int> calculateShadowPosition();
-    
+    const std::pair<int, int> calculateShadowPosition() const;
 };
 }

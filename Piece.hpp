@@ -1,7 +1,10 @@
 #pragma once
 
-#include "TetrisTypes.hpp"
+// System includes
 #include <memory>
+
+// Personal includes
+#include "TetrisTypes.hpp"
 
 namespace Tetris {
 class Piece {
@@ -12,39 +15,46 @@ class Piece {
     Tetris::Shape shape;
 
     // Constructor 
-    Piece(int startType, int startX, int startY);
+    Piece(const int startType, const int startX, const int startY);
+
     // Destructor 
     virtual ~Piece() = default;
 
     // Creates a block, returns a unique_ptr
-    static std::unique_ptr<Piece> createPiece(int type, int x, int y);
+    static std::unique_ptr<Piece> createPiece(const int type, const int x, const int y);
 
     // Draw piece color
-    void draw(int t) const;
+    void draw(const int type) const;
 
     int getX() const;
     void setX(int x);
 
     int getY() const;
-    void setY(int y);
+    void setY(const int y);
 
     int getType() const; 
-    void setType(int type);
+    void setType(const int type);
 
-    // Check if coordinates (x, y) in board are block type
-    bool isBlock(Tetris::Board& board, int x, int y) const;
+    const Tetris::Shape& getShape() const;
+    void setShape(const Tetris::Shape& shape);
+
+    // Check if coordinates (x, y) in shape are block type
+    bool isBlockType(const Tetris::Shape& shape, const int x, const int y) const;
+
+    // Check if coordinates (x, y) in board are any kind of block
+    bool isBlock(const Tetris::Board& board, const int x, const int y) const;
     
     // Checks if (x, y) is within board grid
-    bool isWithinBounds(int x, int y) const;
+    bool isWithinBounds(const int x, const int y) const;
 
     // Checks if block can rotate in board
-    bool canRotate(Tetris::Board& board, Tetris::Shape& rotated) const;
+    bool canRotate(const Tetris::Board& board, const Tetris::Shape& rotated) const;
 
     // Rotates the block
-    void rotate(Tetris::Board& board);
+    void rotate(const Tetris::Board& board);
 
     // Checks if block collided with a non-blank space
-    bool collided(Tetris::Board& board, int offx, int offy) const;
+    bool collided(const Tetris::Board& board, const int offx, const int offy) const;
  
     // Overload the += operator for position adjustment
     Piece& operator+=(const std::pair<int, int>& offset);

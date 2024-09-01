@@ -4,7 +4,7 @@ Only works in linux systems, require g++ compiler
 
 # TODO List
 - [ ] Rotate around the piece center
-- [x] Include ncurses library to get buffer input instantly - Made I guess? It'll work for now
+- [x] Get buffer input instantly
 - [x] Clear completed rows
 - [x] Differentiate each piece by a color 
 - [x] Make it runs slightly faster

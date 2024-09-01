@@ -12,6 +12,9 @@ public:
   
   // Block types
   static constexpr int TYPES = 7;
+  static const std::string SHADOW;
+  static const std::string BLOCK;
+  static const std::string EMPTY;
 
   // Grid block size
   static constexpr int PIECESIZE = 4;

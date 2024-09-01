@@ -11,9 +11,6 @@ Piece.o: Piece.cpp Piece.hpp TetrisTypes.hpp
 Game.o: Game.cpp Game.hpp TetrisTypes.hpp
 	g++ -c $< $(CFLAGS)
 
-Constants.o: Constants.cpp Constants.hpp 
-	g++ -c $< $(CFLAGS)
-
 %.o : %.cpp %.hpp
 	g++ -c $< $(CFLAGS)
 
