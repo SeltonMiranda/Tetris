@@ -1,20 +1,15 @@
 # Simple Tetris game for terminal
 
-Only works in linux systems, require g++ compiler
+Only works in linux systems, requires g++ compiler
 
-# TODO List
-- [ ] Rotate around the piece center
-- [x] Get buffer input instantly
-- [x] Clear completed rows
-- [x] Differentiate each piece by a color 
-- [x] Make it runs slightly faster
-- [x] Encapsulate members from class 
-- [x] Create a queue of next pieces
-- [x] Make a scoreboard
+![](https://github.com/SeltonMiranda/Tetris/blob/main/Tetris.gif)
 
-## AFTER ALL IT IS DONE ABOVE
-- [ ] Change piece class by an abstract block class
-- [ ] Refactor to use an 1-dim array than 2-dim array for pieces and board
+# How to play
+Press A or D to move left or right, respectively
+Press W to rotate block
+Press S to soft drop
+Press E to hard drop
+Press Q to quit
 
 # To Run the game
 ```bash
