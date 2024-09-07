@@ -3,7 +3,7 @@
 Only works in linux systems, requires g++ compiler
 
 <img src="https://github.com/SeltonMiranda/Tetris/blob/main/Tetris.gif"
-        width ="200" height ="300"/>
+        width ="400" height ="300"/>
 
 # How to play
 Press A or D to move left or right, respectively <br/>
