@@ -1,15 +1,15 @@
 // System includes
 #include <iostream>
 #include <stdexcept>
-#include <termios.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <termios.h>
 #include <unistd.h>
 
 // Personal includes
-#include "Game.hpp"
-#include "Constants.hpp"
-#include "Piece.hpp"
+#include "../includes/Game.hpp"
+#include "../includes/Constants.hpp"
+#include "../includes/Piece.hpp"
 
 namespace Tetris {
 
@@ -184,7 +184,7 @@ void Game::run() {
     this->clearFullRows();
     this->movePiece(0, 1);
     this->drawBoard();
-    usleep(3500 * 1000 / (this->fps / 10));
+    usleep(3500 * 1000 / (this->fps / 4));
   }
 }
 
@@ -271,7 +271,6 @@ int Game::getch() const {
   int ch;
   struct termios oldattr, newattr;
 
-  // Save current terminal attributes
   tcgetattr(STDIN_FILENO, &oldattr);
   newattr = oldattr;
 
@@ -291,10 +290,6 @@ int Game::getch() const {
   while ((lastChar = getchar()) != EOF) {
     ch = lastChar;
   }
-
-  // Restore old attributes
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
-  fcntl(STDIN_FILENO, F_SETFL, oldFlags);
 
   return ch; 
 }
